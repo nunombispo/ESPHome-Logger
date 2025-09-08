@@ -10,16 +10,16 @@ API_PASSWORD = os.getenv("API_PASSWORD")
 
 async def main():
     # Connect to your ESPHome device by IP or hostname
-    client = APIClient(API_HOST, 6053, password=API_PASSWORD)
+    client = APIClient(API_HOST, 6053, password=API_PASSWORD, noise_psk=API_PASSWORD)
     await client.connect(login=True)
 
     # Define a callback function that will be triggered every time
     # the device sends a new state update (sensor reading, switch state, etc.)
-    async def state_callback(state):
+    def state_callback(state):
         print("State update:", state)
 
     # Subscribe to all state updates
-    await client.subscribe_states(state_callback)
+    client.subscribe_states(state_callback)
 
     # Keep the script running so we continue receiving updates
     while True:
