@@ -1,12 +1,16 @@
 import asyncio
 from aioesphomeapi import APIClient
+from dotenv import load_dotenv
+import os
 
 # Load environment variables
 load_dotenv()
+API_HOST = os.getenv("API_HOST")
+API_PASSWORD = os.getenv("API_PASSWORD")
 
 async def main():
     # Connect to your ESPHome device by IP or hostname
-    client = APIClient(os.getenv("API_HOST"), 6053, password=os.getenv("API_PASSWORD"))
+    client = APIClient(API_HOST, 6053, password=API_PASSWORD)
     await client.connect(login=True)
 
     # Define a callback function that will be triggered every time
