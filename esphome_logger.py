@@ -1,7 +1,8 @@
 import asyncio
 import csv
+from math import isnan
 import os
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from aioesphomeapi import APIClient
 from aioesphomeapi.core import APIConnectionError
 
@@ -15,6 +16,7 @@ class ESPHomeLogger:
         self.entity_map = {}
         self.retry_interval = retry_interval
         self.connected = False
+        self.connected_time = None
 
         os.makedirs(csv_dir, exist_ok=True)
 
@@ -37,6 +39,7 @@ class ESPHomeLogger:
             self.entity_map = {ent.key: ent.name for ent in entities}
             self.client.subscribe_states(self._state_callback)
             self.connected = True
+            self.connected_time = datetime.now()
             print(f"Successfully connected to {self.host}")
         except APIConnectionError as e:
             self.connected = False
@@ -53,12 +56,13 @@ class ESPHomeLogger:
         friendly = self.entity_map.get(entity_id, "unknown")
         value = getattr(state, "state", None)
         # Skip if the value is None or nan
-        if value is None or value == "nan":
+        if value is None or isnan(value):
             return
+
         # Write to the CSV file
         with open(self._get_csv_file(), "a", newline="") as f:
             csv.writer(f).writerow([datetime.now().isoformat(), entity_id, friendly, value])
-            print(f"State update: {self.host} - {entity_id} - {friendly} - {value}")
+            print(f"State update: {datetime.now().isoformat()} - {self.host} - {entity_id} - {friendly} - {value}")
 
     # Run the logger with retry logic
     async def run(self):
@@ -70,7 +74,12 @@ class ESPHomeLogger:
                 
                 # Keep the connection alive
                 await asyncio.sleep(10)
-                print(f"Sleeping for 10 seconds for {self.host}")
+                
+                # Assume disconnected if connected time is more than 1 minute ago
+                if self.connected_time and datetime.now() - self.connected_time > timedelta(minutes=1):
+                    print(f"No data has been written in the last 1 minute for {self.host}, assuming disconnected")
+                    self.connected = False
+                    self.connected_time = None
 
             except APIConnectionError as e:
                 print(f"Connection lost to {self.host}: {e}")
