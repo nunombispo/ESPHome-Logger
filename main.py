@@ -18,13 +18,16 @@ API_LIVINGROOM_PASSWORD=os.getenv("API_LIVINGROOM_PASSWORD")
 
 
 async def main():
+    # Loggers
     devices = [
         {"host": API_HOST_LIVINGROOM, "password": API_LIVINGROOM_PASSWORD, "csv_dir": "logs/living_room"},
         {"host": API_HOST_WORKROOM, "password": API_WORKROOM_PASSWORD, "csv_dir": "logs/work_room"},
         {"host": API_HOST_BEDROOM, "password": API_BEDROOM_PASSWORD, "csv_dir": "logs/bedroom"},
     ]
+    # Start loggers
     loggers = [ESPHomeLogger(**dev) for dev in devices]
     await asyncio.gather(*(logger.run() for logger in loggers))
 
+# Run the main function
 if __name__ == "__main__":
     asyncio.run(main())
