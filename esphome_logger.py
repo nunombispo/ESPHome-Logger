@@ -4,13 +4,6 @@ import os
 from datetime import datetime, date
 from aioesphomeapi import APIClient
 from aioesphomeapi.core import APIConnectionError
-from dotenv import load_dotenv
-import os
-
-# Load environment variables
-load_dotenv()
-API_HOST = os.getenv("API_HOST")
-API_PASSWORD = os.getenv("API_PASSWORD")
 
 # ESPHomeLogger class
 class ESPHomeLogger:
@@ -59,10 +52,10 @@ class ESPHomeLogger:
         entity_id = state.key
         friendly = self.entity_map.get(entity_id, "unknown")
         value = getattr(state, "state", None)
-
+        # Skip if the value is None or nan
         if value is None or value == "nan":
             return
-
+        # Write to the CSV file
         with open(self._get_csv_file(), "a", newline="") as f:
             csv.writer(f).writerow([datetime.now().isoformat(), entity_id, friendly, value])
             print(f"State update: {self.host} - {entity_id} - {friendly} - {value}")
