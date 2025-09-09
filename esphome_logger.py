@@ -55,6 +55,7 @@ class ESPHomeLogger:
         entity_id = state.key
         friendly = self.entity_map.get(entity_id, "unknown")
         value = getattr(state, "state", None)
+        
         # Skip if the value is None or nan
         if value is None:
             return
