@@ -56,8 +56,16 @@ class ESPHomeLogger:
         friendly = self.entity_map.get(entity_id, "unknown")
         value = getattr(state, "state", None)
         # Skip if the value is None or nan
-        if value is None or isnan(value):
+        if value is None:
             return
+        
+        # Check if value is a number and if it's NaN
+        try:
+            if isinstance(value, (int, float)) and isnan(value):
+                return
+        except (TypeError, ValueError):
+            # If it's not a number, continue processing
+            pass
 
         # Write to the CSV file
         with open(self._get_csv_file(), "a", newline="") as f:
@@ -75,9 +83,9 @@ class ESPHomeLogger:
                 # Keep the connection alive
                 await asyncio.sleep(10)
                 
-                # Assume disconnected if connected time is more than 1 minute ago
-                if self.connected_time and datetime.now() - self.connected_time > timedelta(minutes=1):
-                    print(f"No data has been written in the last 1 minute for {self.host}, assuming disconnected")
+                # Assume disconnected if connected time is more than 5 minute ago
+                if self.connected_time and datetime.now() - self.connected_time > timedelta(minutes=5):
+                    print(f"Last connection was more than 5 minutes ago, assuming disconnected")
                     self.connected = False
                     self.connected_time = None
 
