@@ -20,7 +20,10 @@ API_ATTIC_PASSWORD=os.getenv("API_ATTIC_PASSWORD")
 # Hallway
 API_HOST_HALLWAY=os.getenv("API_HOST_HALLWAY")
 API_HALLWAY_PASSWORD=os.getenv("API_HALLWAY_PASSWORD")
-
+# Small Bedroom
+API_HOST_SMALLBEDROOM=os.getenv("API_HOST_SMALLBEDROOM")
+API_SMALLBEDROOM_PASSWORD=os.getenv("API_SMALLBEDROOM_PASSWORD")
+print(API_HOST_SMALLBEDROOM, API_SMALLBEDROOM_PASSWORD)
 
 async def main():
     devices = [
@@ -29,6 +32,7 @@ async def main():
         {"host": API_HOST_BEDROOM, "password": API_BEDROOM_PASSWORD, "csv_dir": "logs/bedroom"},
         {"host": API_HOST_ATTIC, "password": API_ATTIC_PASSWORD, "csv_dir": "logs/attic"},
         {"host": API_HOST_HALLWAY, "password": API_HALLWAY_PASSWORD, "csv_dir": "logs/hallway"},
+        {"host": API_HOST_SMALLBEDROOM, "password": API_SMALLBEDROOM_PASSWORD, "csv_dir": "logs/small_bedroom"},
     ]
     loggers = [ESPHomeLogger(**dev) for dev in devices]
     await asyncio.gather(*(logger.run() for logger in loggers))
