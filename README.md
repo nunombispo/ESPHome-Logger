@@ -2,6 +2,8 @@
 
 A Python application for logging sensor data and device states from multiple ESPHome devices to CSV files. This tool continuously monitors ESPHome devices and logs all state changes with timestamps for data analysis and monitoring.
 
+If these scripts were useful to you, consider donating to support the Developer Service Blog: https://buy.stripe.com/bIYdTrggi5lZamkdQW
+
 ## Features
 
 - **Multi-device support**: Monitor multiple ESPHome devices simultaneously
